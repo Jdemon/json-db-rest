@@ -49,7 +49,7 @@ public abstract class JsonDBService<T extends JsonDBModel> {
         objectNode.putPOJO("data", dataList);
         objectNode.put("page", page);
         objectNode.put("maxPage", (int) Math.ceil((double) count / (double) size));
-        objectNode.put("total", subDistricts.size());
+        objectNode.put("total", dataList.size());
         objectNode.put("grandTotal", count);
 
         return objectNode;

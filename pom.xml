@@ -10,7 +10,7 @@
     </parent>
     <groupId>th.co.jfilter</groupId>
     <artifactId>json-db-rest</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <name>json-db-rest</name>
     <description>Restful API filter by JsonDB</description>
     <properties>

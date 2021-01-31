@@ -44,9 +44,9 @@ public abstract class JsonDBService<T extends JsonDBModel> {
         int start = size * (page - 1);
         int end = start + size;
 
-        List<T> subDistricts = jsonDBTemplate.find(queryString, clazz, null, start + ":" + end + ":1");
+        List<T> dataList = jsonDBTemplate.find(queryString, clazz, null, start + ":" + end + ":1");
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
-        objectNode.putPOJO("data", subDistricts);
+        objectNode.putPOJO("data", dataList);
         objectNode.put("page", page);
         objectNode.put("maxPage", (int) Math.ceil((double) count / (double) size));
         objectNode.put("total", subDistricts.size());

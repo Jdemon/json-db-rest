@@ -1,5 +1,6 @@
 package th.co.jfilter.jsondb.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +13,11 @@ import java.util.Map;
 @RestController
 public abstract class JsonDBController<T extends JsonDBModel> {
 
-    @Autowired
-    protected JsonDBService<T> service;
+    protected final JsonDBService<T> service;
+
+    public JsonDBController(JsonDBService<T> service) {
+        this.service = service;
+    }
 
     @GetMapping
     public List<T> findAll(@RequestParam(required = false) Map<String, String> params) {
@@ -44,5 +48,12 @@ public abstract class JsonDBController<T extends JsonDBModel> {
     public ResponseEntity<?> delete(@PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/pagination")
+    public ObjectNode pagination(@RequestParam(name = "page", defaultValue = "1", required = false) Integer page,
+                                 @RequestParam(name = "size", defaultValue = "1000", required = false) Integer size,
+                                 @RequestParam(required = false) Map<String, String> params) {
+        return service.findPagination(params, page, size);
     }
 }

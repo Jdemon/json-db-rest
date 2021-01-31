@@ -1,5 +1,8 @@
 package th.co.jfilter.jsondb.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.jsondb.InvalidJsonDbApiUsageException;
 import io.jsondb.JsonDBTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -15,14 +18,41 @@ import java.util.Map;
 @Service
 public abstract class JsonDBService<T extends JsonDBModel> {
 
-    private Class<T> clazz;
+    protected Class<T> clazz;
 
-    @Autowired
-    protected JsonDBTemplate jsonDBTemplate;
+    protected final JsonDBTemplate jsonDBTemplate;
 
-    public JsonDBService() {
+    public JsonDBService(JsonDBTemplate jsonDBTemplate) {
         this.clazz = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
                 .getActualTypeArguments()[0];
+        this.jsonDBTemplate = jsonDBTemplate;
+    }
+
+    public ObjectNode findPagination(Map<String, String> params, Integer page, Integer size) {
+        if (params != null && !params.isEmpty()) {
+            if (params.get("page") != null) params.remove("page");
+            if (params.get("size") != null) params.remove("size");
+        }
+
+        if(page <= 0 || size <= 0) {
+            throw new InvalidJsonDbApiUsageException("`page` or `size` require value more than zero(0).");
+        }
+
+        String queryString = generateJxQuery(params);
+
+        int count = jsonDBTemplate.find(queryString, clazz).size();
+        int start = size * (page - 1);
+        int end = start + size;
+
+        List<T> subDistricts = jsonDBTemplate.find(queryString, clazz, null, start + ":" + end + ":1");
+        ObjectNode objectNode = new ObjectMapper().createObjectNode();
+        objectNode.putPOJO("data", subDistricts);
+        objectNode.put("page", page);
+        objectNode.put("maxPage", (int) Math.ceil((double) count / (double) size));
+        objectNode.put("total", subDistricts.size());
+        objectNode.put("grandTotal", count);
+
+        return objectNode;
     }
 
     public List<T> findAll(Map<String, String> params) {

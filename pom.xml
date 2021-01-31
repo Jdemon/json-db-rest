@@ -31,7 +31,7 @@
         <dependency>
             <groupId>io.jsondb</groupId>
             <artifactId>jsondb-core</artifactId>
-            <version>1.0.64</version>
+            <version>1.0.115-j11</version>
         </dependency>
         <dependency>
             <groupId>com.github.opendevl</groupId>

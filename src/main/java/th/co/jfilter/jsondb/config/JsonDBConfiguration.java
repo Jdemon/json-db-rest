@@ -41,6 +41,7 @@ public class JsonDBConfiguration {
                 for (File data : fileList) {
                     FileUtils.copyFileToDirectory(data, new File(jsonDBProperties.getLocation()));
                 }
+                jsonDBTemplate.i
             }
         } catch (IOException e) {
             log.info("files not found!");
